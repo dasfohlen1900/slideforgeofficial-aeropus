@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlideForge Pro — Präsentationssoftware</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto:wght@300;400;700;900&family=Open+Sans:wght@300;400;600;700;800&family=Lato:wght@300;400;700;900&family=Montserrat:wght@300;400;600;700;900&family=Raleway:wght@300;400;600;700;900&family=Poppins:wght@300;400;600;700;900&family=Oswald:wght@300;400;600;700&family=Playfair+Display:wght@400;700;900&family=Merriweather:wght@300;400;700;900&family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=Space+Grotesk:wght@300;400;600;700&family=Fira+Sans:wght@300;400;600;700;900&family=Quicksand:wght@300;400;600;700&family=Nunito:wght@300;400;600;700;900&family=Rubik:wght@300;400;600;700;900&family=Work+Sans:wght@300;400;600;700;900&family=Barlow:wght@300;400;600;700;900&family=Outfit:wght@300;400;600;700;900&family=Manrope:wght@300;400;600;700;800&family=Urbanist:wght@300;400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=IBM+Plex+Sans:wght@300;400;600;700&family=Archivo:wght@300;400;600;700;900&family=Cabin:wght@400;600;700&family=Figtree:wght@300;400;600;700;900&family=Lexend:wght@300;400;600;700;900&family=Karla:wght@300;400;600;700;800&family=Crimson+Text:wght@400;600;700&family=Bitter:wght@300;400;600;700;900&family=Arvo:wght@400;700&family=Zilla+Slab:wght@300;400;600;700&family=Spectral:wght@300;400;600;700;800&family=Cormorant:wght@300;400;600;700&family=Abril+Fatface&family=Righteous&family=Pacifico&family=Lobster&family=Caveat:wght@400;700&family=Permanent+Marker&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --panel: #1c1c1f;
+    --border: #2a2a2e;
+    --accent: #e8ff47;
+    --accent2: #ff6b35;
+    --accent3: #7c5cfc;
+    --text: #f0f0f0;
+    --muted: #777;
+    --slide-w: 960px;
+    --slide-h: 540px;
+  }
+
+  [data-theme="light"] {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --panel: #fafafa;
+    --border: #e0e0e0;
+    --accent: #4a90e2;
+    --accent2: #ff6b35;
+    --accent3: #7c5cfc;
+    --text: #1a1a1a;
+    --muted: #666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── TOOLBAR ── */
+  #toolbar {
+    height: 52px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 12px;
+    flex-shrink: 0;
+  }
+
+  .tb-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--accent);
+    margin-right: 16px;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+  }
+
+  .tb-sep { width: 1px; height: 28px; background: var(--border); margin: 0 8px; }
+
+  .tb-btn {
+    height: 32px;
+    padding: 0 10px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: background .15s;
+    white-space: nowrap;
+  }
+  .tb-btn:hover { background: var(--border); }
+  .tb-btn.active { background: var(--accent); color: #000; }
+  .tb-btn svg { flex-shrink: 0; }
+
+  /* Dropdown Menu */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background: var(--surface);
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    z-index: 1000;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    padding: 4px;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s;
+  }
+
+  .dropdown-item:hover {
+    background: var(--border);
+  }
+
+  .tb-color-group { display: flex; align-items: center; gap: 4px; }
+  .color-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    cursor: pointer; border: 2px solid transparent;
+    transition: transform .15s, border-color .15s;
+  }
+  .color-dot:hover { transform: scale(1.2); }
+  .color-dot.selected { border-color: var(--text); }
+
+  .tb-spacer { flex: 1; }
+
+  .theme-select {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  #main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── SLIDE PANEL ── */
+  #slide-panel {
+    width: 180px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  #slide-panel::-webkit-scrollbar { width: 4px; }
+  #slide-panel::-webkit-scrollbar-track { background: transparent; }
+  #slide-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .slide-thumb {
+    position: relative;
+    aspect-ratio: 16/9;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color .15s, transform .15s;
+    flex-shrink: 0;
+  }
+  .slide-thumb:hover { border-color: var(--muted); transform: scale(1.02); }
+  .slide-thumb.active { border-color: var(--accent); }
+
+  .slide-thumb canvas {
+    width: 100%; height: 100%;
+    display: block;
+  }
+
+  .slide-num {
+    position: absolute;
+    bottom: 3px; left: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .thumb-del {
+    position: absolute;
+    top: 3px; right: 3px;
+    width: 16px; height: 16px;
+    background: rgba(0,0,0,0.6);
+    border: none; border-radius: 50%;
+    color: #fff; font-size: 10px;
+    cursor: pointer; display: none;
+    align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .slide-thumb:hover .thumb-del { display: flex; }
+  .thumb-del:hover { background: #c0392b; }
+
+  #add-slide-btn {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .15s;
+    margin-top: 2px;
+  }
+  #add-slide-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── CANVAS AREA ── */
+  #canvas-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    background-image: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 70%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  [data-theme="light"] #canvas-area {
+    background-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.02) 0%, transparent 70%);
+  }
+
+  #canvas-wrapper {
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  [data-theme="light"] #canvas-wrapper {
+    box-shadow: 0 32px 80px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+  }
+
+  #main-canvas {
+    display: block;
+    cursor: crosshair;
+  }
+
+  /* Start Page */
+  #start-page {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    flex-direction: column;
+    gap: 32px;
+    padding: 40px;
+  }
+
+  #start-page.hidden {
+    display: none;
+  }
+
+  .start-header {
+    text-align: center;
+  }
+
+  .start-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 64px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+  }
+
+  .start-subtitle {
+    font-size: 20px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .start-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .start-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    width: 220px;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+  }
+
+  .start-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .start-card-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .start-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .start-card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── PROPERTIES PANEL ── */
+  #props-panel {
+    width: 260px;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  #props-panel::-webkit-scrollbar { width: 4px; }
+  #props-panel::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .prop-section { display: flex; flex-direction: column; gap: 8px; }
+  .prop-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .prop-row { display: flex; align-items: center; gap: 8px; }
+
+  .prop-input, .prop-select {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .prop-input:focus, .prop-select:focus { border-color: var(--accent3); }
+
+  .prop-select {
+    cursor: pointer;
+    max-height: 200px;
+  }
+
+  .prop-input[type=color] {
+    padding: 2px;
+    width: 36px; height: 28px;
+    cursor: pointer;
+  }
+
+  .prop-range {
+    flex: 1;
+    appearance: none;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  .prop-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+  }
+
+  .prop-range-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    width: 38px;
+    text-align: right;
+  }
+
+  .prop-btn {
+    flex: 1;
+    padding: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .prop-btn:hover { background: var(--border); }
+  .prop-btn.danger:hover { background: #c0392b; color: #fff; }
+
+  .format-btns {
+    display: flex;
+    gap: 4px;
+  }
+
+  .format-btn {
+    width: 32px;
+    height: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .format-btn:hover { background: var(--border); }
+  .format-btn.active { background: var(--accent); color: #000; }
+
+  /* ── STATUS BAR ── */
+  #status {
+    height: 28px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  /* ── GENERIC DIALOG OVERLAY ── */
+  #dialog-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+  }
+  #dialog-overlay.active { display: flex; }
+
+  .dialog-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 28px 22px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .dialog-icon {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .dialog-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .dialog-message {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .dialog-input {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+  .dialog-input:focus { border-color: var(--accent3); }
+
+  .dialog-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+
+  .dialog-btn {
+    padding: 9px 20px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s, background .15s;
+  }
+  .dialog-btn.primary { background: var(--accent); color: #000; }
+  .dialog-btn.primary:hover { opacity: 0.88; }
+  .dialog-btn.secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
+  .dialog-btn.secondary:hover { background: var(--border); }
+  .dialog-btn.danger { background: #c0392b; color: #fff; }
+  .dialog-btn.danger:hover { opacity: 0.88; }
+  #text-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  #text-modal.active { display: flex; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--accent);
+  }
+
+  .modal-input-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    margin-bottom: 20px; 
+  }
+
+  .modal-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .modal-input {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .modal-input:focus { border-color: var(--accent3); }
+
+  .modal-select {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+
+  .modal-btn.primary {
+    background: var(--accent);
+    color: #000;
+  }
+  .modal-btn.primary:hover { opacity: 0.9; }
+
+  .modal-btn.secondary {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .modal-btn.secondary:hover { background: var(--border); }
+
+  /* ── PRESENTATION OVERLAY ── */
+  #present-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+  }
+  #present-overlay.active { display: flex; }
+
+  #present-canvas { 
+    display: block; 
+    box-shadow: 0 0 100px rgba(0,0,0,0.8);
+  }
+
+  #present-exit {
+    position: absolute;
+    top: 20px; right: 20px;
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.1);
+    border: none; border-radius: 50%;
+    color: #fff; font-size: 20px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  #present-exit:hover { background: rgba(255,255,255,0.2); }
+
+  #present-counter {
+    position: absolute;
+    bottom: 20px; right: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .present-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .2s, transform .2s;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+  }
+  .present-nav:hover {
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .present-nav:active { transform: translateY(-50%) scale(0.96); }
+  #present-prev { left: 24px; }
+  #present-next { right: 24px; }
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <div class="tb-logo">SlideForge Pro</div>
+
+  <div class="dropdown">
+    <button class="tb-btn">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M2 2h10M2 7h10M2 12h6"/>
+      </svg>
+      Datei ▾
+    </button>
+    <div class="dropdown-content">
+      <div class="dropdown-item" onclick="newPresentation()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 2h10M2 7h10M2 12h6"/>
+        </svg>
+        Neu
+      </div>
+      <div class="dropdown-item" onclick="loadStartTemplate()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L7 7M7 7l5 5M7 7H2"/>
+        </svg>
+        Start-Vorlage
+      </div>
+      <div class="dropdown-item" onclick="saveProject()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 13V3h6l2 2v8H3zM5 1v4h4"/>
+        </svg>
+        Speichern
+      </div>
+      <div class="dropdown-item" onclick="loadProject()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M7 2v10M3 6l4-4 4 4"/>
+        </svg>
+        Laden
+      </div>
+    </div>
+  </div>
+
+  <div class="tb-sep"></div>
+
+  <button id="btn-select" class="tb-btn active" onclick="setTool('select')">
+    <svg width="14" height="14" fill="currentColor">
+      <path d="M2 1l4 11 2-5 5-2z"/>
+    </svg>
+    Auswahl
+  </button>
+
+  <button id="btn-text" class="tb-btn" onclick="setTool('select'); openTextModal();">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M2 3h10M7 3v8"/>
+    </svg>
+    Text
+  </button>
+
+  <div class="tb-sep"></div>
+
+  <button id="btn-bold" class="tb-btn" onclick="toggleBold()" title="Fett (B)">
+    <strong>B</strong>
+  </button>
+
+  <button id="btn-italic" class="tb-btn" onclick="toggleItalic()" title="Kursiv (I)">
+    <em>I</em>
+  </button>
+
+  <button id="btn-underline" class="tb-btn" onclick="toggleUnderline()" title="Unterstrichen (U)">
+    <u>U</u>
+  </button>
+
+  <div class="tb-sep"></div>
+
+  <button id="btn-rect" class="tb-btn" onclick="setTool('rect')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="2" width="10" height="10" rx="1"/>
+    </svg>
+    Rechteck
+  </button>
+
+  <button id="btn-ellipse" class="tb-btn" onclick="setTool('ellipse')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="7" cy="7" r="5"/>
+    </svg>
+    Ellipse
+  </button>
+
+  <button id="btn-line" class="tb-btn" onclick="setTool('line')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M2 12L12 2"/>
+    </svg>
+    Linie
+  </button>
+
+  <button id="btn-arrow" class="tb-btn" onclick="setTool('arrow')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M2 12L12 2M12 2L8 2M12 2v4"/>
+    </svg>
+    Pfeil
+  </button>
+
+  <button class="tb-btn" onclick="addImageFromUrl()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="2" width="10" height="10" rx="1"/>
+      <circle cx="5" cy="5" r="1" fill="currentColor"/>
+      <path d="M12 8l-3-3-4 4"/>
+    </svg>
+    Bild
+  </button>
+
+  <div class="tb-sep"></div>
+
+  <div class="tb-color-group">
+    <div class="color-dot selected" style="background:#e8ff47" onclick="setColor('#e8ff47')"></div>
+    <div class="color-dot" style="background:#ff6b35" onclick="setColor('#ff6b35')"></div>
+    <div class="color-dot" style="background:#7c5cfc" onclick="setColor('#7c5cfc')"></div>
+    <div class="color-dot" style="background:#4ecdc4" onclick="setColor('#4ecdc4')"></div>
+    <div class="color-dot" style="background:#f0f0f0" onclick="setColor('#f0f0f0')"></div>
+    <div class="color-dot" style="background:#000000" onclick="setColor('#000000')"></div>
+  </div>
+
+  <div class="tb-spacer"></div>
+
+  <button class="tb-btn" onclick="toggleTheme()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="7" cy="7" r="4"/>
+      <path d="M7 1v2M7 11v2M13 7h-2M3 7H1M11.5 11.5l-1.4-1.4M3.9 3.9L2.5 2.5M11.5 2.5l-1.4 1.4M3.9 10.1L2.5 11.5"/>
+    </svg>
+    <span id="theme-label">Light</span>
+  </button>
+
+  <div class="tb-sep"></div>
+
+  <button class="tb-btn" onclick="exportPNG()">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M2 10v2h10v-2M7 2v8M4 7l3 3 3-3"/>
+    </svg>
+    Export PNG
+  </button>
+
+  <button class="tb-btn" onclick="startPresentation()">
+    <svg width="14" height="14" fill="currentColor">
+      <path d="M3 2l9 5-9 5z"/>
+    </svg>
+    Präsentieren
+  </button>
+</div>
+
+<!-- START PAGE -->
+<div id="start-page">
+  <div class="start-header">
+    <div class="start-title">SlideForge Pro</div>
+    <div class="start-subtitle">Professionelle Präsentationen erstellen</div>
+  </div>
+  
+  <div class="start-actions">
+    <div class="start-card" onclick="hideStartPage(); newPresentation();">
+      <div class="start-card-icon">📄</div>
+      <div class="start-card-title">Neue Präsentation</div>
+      <div class="start-card-desc">Starte mit einer leeren Folie</div>
+    </div>
+    
+    <div class="start-card" onclick="hideStartPage(); loadStartTemplate();">
+      <div class="start-card-icon">🎨</div>
+      <div class="start-card-title">Beispiel-Vorlage</div>
+      <div class="start-card-desc">Lade eine fertige Vorlage</div>
+    </div>
+    
+    <div class="start-card" onclick="hideStartPage(); loadProject();">
+      <div class="start-card-icon">📂</div>
+      <div class="start-card-title">Projekt öffnen</div>
+      <div class="start-card-desc">Lade eine .slideforge Datei</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div id="main">
+  <!-- SLIDE PANEL -->
+  <div id="slide-panel">
+    <div id="slides-container"></div>
+    <button id="add-slide-btn" onclick="addSlide()">+ Neue Folie</button>
+  </div>
+
+  <!-- CANVAS AREA -->
+  <div id="canvas-area">
+    <div id="canvas-wrapper">
+      <canvas id="main-canvas" width="960" height="540"></canvas>
+    </div>
+  </div>
+
+  <!-- PROPERTIES PANEL -->
+  <div id="props-panel">
+    <div class="prop-section" id="text-props" style="display:none">
+      <div class="prop-label">Text-Eigenschaften</div>
+      
+      <div class="prop-row">
+        <select id="prop-font" class="prop-select" onchange="updateSelectedFont()">
+          <optgroup label="Classic Fonts">
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Trebuchet MS">Trebuchet MS</option>
+            <option value="Comic Sans MS">Comic Sans MS</option>
+            <option value="Impact">Impact</option>
+            <option value="Tahoma">Tahoma</option>
+          </optgroup>
+          <optgroup label="Modern Fonts">
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Lato">Lato</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Raleway">Raleway</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Syne">Syne</option>
+            <option value="Space Grotesk">Space Grotesk</option>
+            <option value="Fira Sans">Fira Sans</option>
+            <option value="Quicksand">Quicksand</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Rubik">Rubik</option>
+            <option value="Work Sans">Work Sans</option>
+            <option value="Barlow">Barlow</option>
+            <option value="Outfit">Outfit</option>
+            <option value="Manrope">Manrope</option>
+            <option value="Urbanist">Urbanist</option>
+            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+            <option value="IBM Plex Sans">IBM Plex Sans</option>
+            <option value="Archivo">Archivo</option>
+            <option value="Cabin">Cabin</option>
+            <option value="Figtree">Figtree</option>
+            <option value="Lexend">Lexend</option>
+            <option value="Karla">Karla</option>
+          </optgroup>
+          <optgroup label="Serif Fonts">
+            <option value="Playfair Display">Playfair Display</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="DM Serif Display">DM Serif Display</option>
+            <option value="Crimson Text">Crimson Text</option>
+            <option value="Bitter">Bitter</option>
+            <option value="Arvo">Arvo</option>
+            <option value="Zilla Slab">Zilla Slab</option>
+            <option value="Spectral">Spectral</option>
+            <option value="Cormorant">Cormorant</option>
+          </optgroup>
+          <optgroup label="Display Fonts">
+            <option value="Bebas Neue">Bebas Neue</option>
+            <option value="Oswald">Oswald</option>
+            <option value="Abril Fatface">Abril Fatface</option>
+            <option value="Righteous">Righteous</option>
+          </optgroup>
+          <optgroup label="Handwriting">
+            <option value="Pacifico">Pacifico</option>
+            <option value="Lobster">Lobster</option>
+            <option value="Caveat">Caveat</option>
+            <option value="Permanent Marker">Permanent Marker</option>
+            <option value="Shadows Into Light">Shadows Into Light</option>
+          </optgroup>
+          <optgroup label="Monospace">
+            <option value="DM Mono">DM Mono</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="prop-row">
+        <input type="range" id="prop-size" class="prop-range" min="8" max="200" value="48" oninput="updateSelectedSize()">
+        <span id="prop-size-val" class="prop-range-val">48px</span>
+      </div>
+
+      <div class="prop-row">
+        <select id="prop-weight" class="prop-select" onchange="updateSelectedWeight()">
+          <option value="300">Light</option>
+          <option value="400" selected>Regular</option>
+          <option value="600">SemiBold</option>
+          <option value="700">Bold</option>
+          <option value="800">ExtraBold</option>
+          <option value="900">Black</option>
+        </select>
+      </div>
+
+      <div class="prop-label" style="margin-top: 4px;">Formatierung</div>
+      <div class="format-btns">
+        <button id="prop-bold" class="format-btn" onclick="toggleBold()" title="Fett">
+          <strong>B</strong>
+        </button>
+        <button id="prop-italic" class="format-btn" onclick="toggleItalic()" title="Kursiv">
+          <em>I</em>
+        </button>
+        <button id="prop-underline" class="format-btn" onclick="toggleUnderline()" title="Unterstrichen">
+          <u>U</u>
+        </button>
+      </div>
+    </div>
+
+    <div class="prop-section">
+      <div class="prop-label">Farbe</div>
+      <div class="prop-row">
+        <input type="color" id="prop-fill" class="prop-input" value="#e8ff47" onchange="updateSelectedFill()">
+        <span style="font-size:11px; color:var(--muted); flex:1">Füllfarbe</span>
+      </div>
+    </div>
+
+    <div class="prop-section">
+      <div class="prop-label">Deckkraft</div>
+      <div class="prop-row">
+        <input type="range" id="prop-opacity" class="prop-range" min="0" max="100" value="100" oninput="updateSelectedOpacity()">
+        <span id="prop-opacity-val" class="prop-range-val">100%</span>
+      </div>
+    </div>
+
+    <div class="prop-section">
+      <div class="prop-label">Anordnung</div>
+      <div class="prop-row">
+        <button class="prop-btn" onclick="bringForward()">Nach vorn</button>
+        <button class="prop-btn" onclick="sendBackward()">Nach hinten</button>
+      </div>
+    </div>
+
+    <div class="prop-section">
+      <div class="prop-label">Aktionen</div>
+      <div class="prop-row">
+        <button class="prop-btn danger" onclick="deleteSelected()">Löschen</button>
+      </div>
+    </div>
+
+    <div class="prop-section">
+      <div class="prop-label">Hintergrund</div>
+      <div class="prop-row">
+        <button class="prop-btn" onclick="changeBg('#0e0e0f')">Dunkel</button>
+        <button class="prop-btn" onclick="changeBg('#ffffff')">Hell</button>
+      </div>
+      <div class="prop-row">
+        <input type="color" id="bg-color-picker" class="prop-input" value="#0e0e0f" onchange="changeBg(this.value)">
+        <span style="font-size:11px; color:var(--muted); flex:1">Benutzerdefiniert</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="status">
+  <span id="status-slide">Folie 0 / 0</span>
+  <span id="status-objs">0 Objekte</span>
+  <span id="status-tool">Werkzeug: Auswahl</span>
+</div>
+
+<!-- TEXT MODAL -->
+<div id="text-modal">
+  <div class="modal-box">
+    <div class="modal-title">Text hinzufügen</div>
+    <div class="modal-input-group">
+      <label class="modal-label">Text</label>
+      <input type="text" id="text-input" class="modal-input" placeholder="Text eingeben...">
+      
+      <label class="modal-label">Schriftart</label>
+      <select id="text-font" class="modal-select">
+        <optgroup label="Classic Fonts">
+          <option value="Arial">Arial</option>
+          <option value="Verdana">Verdana</option>
+          <option value="Times New Roman">Times New Roman</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Courier New">Courier New</option>
+          <option value="Trebuchet MS">Trebuchet MS</option>
+          <option value="Comic Sans MS">Comic Sans MS</option>
+          <option value="Impact">Impact</option>
+          <option value="Tahoma">Tahoma</option>
+        </optgroup>
+        <optgroup label="Modern Fonts">
+          <option value="Inter">Inter</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Open Sans">Open Sans</option>
+          <option value="Lato">Lato</option>
+          <option value="Montserrat">Montserrat</option>
+          <option value="Raleway">Raleway</option>
+          <option value="Poppins">Poppins</option>
+          <option value="Syne" selected>Syne</option>
+          <option value="Space Grotesk">Space Grotesk</option>
+          <option value="Work Sans">Work Sans</option>
+          <option value="Outfit">Outfit</option>
+          <option value="Manrope">Manrope</option>
+        </optgroup>
+        <optgroup label="Serif Fonts">
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Merriweather">Merriweather</option>
+          <option value="DM Serif Display">DM Serif Display</option>
+        </optgroup>
+        <optgroup label="Display Fonts">
+          <option value="Bebas Neue">Bebas Neue</option>
+          <option value="Oswald">Oswald</option>
+        </optgroup>
+        <optgroup label="Handwriting">
+          <option value="Caveat">Caveat</option>
+          <option value="Permanent Marker">Permanent Marker</option>
+        </optgroup>
+      </select>
+      
+      <label class="modal-label">Größe</label>
+      <input type="number" id="text-size" class="modal-input" value="48" min="8" max="200">
+      
+      <label class="modal-label">Schriftstärke</label>
+      <select id="text-weight" class="modal-select">
+        <option value="300">Light</option>
+        <option value="400">Regular</option>
+        <option value="600">SemiBold</option>
+        <option value="700">Bold</option>
+        <option value="800" selected>ExtraBold</option>
+        <option value="900">Black</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeTextModal()">Abbrechen</button>
+      <button class="modal-btn primary" onclick="confirmText()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRESENTATION OVERLAY -->
+<div id="present-overlay">
+  <canvas id="present-canvas"></canvas>
+  <button id="present-exit" onclick="stopPresentation()">✕</button>
+  <button class="present-nav" id="present-prev" onclick="presentNav(-1)">&#8592;</button>
+  <button class="present-nav" id="present-next" onclick="presentNav(1)">&#8594;</button>
+  <div id="present-counter">1 / 1</div>
+</div>
+
+<!-- GENERIC DIALOG OVERLAY -->
+<div id="dialog-overlay">
+  <div class="dialog-box">
+    <div id="dialog-icon" class="dialog-icon"></div>
+    <div id="dialog-title" class="dialog-title"></div>
+    <div id="dialog-message" class="dialog-message"></div>
+    <input type="text" id="dialog-input" class="dialog-input" style="display:none">
+    <div class="dialog-actions" id="dialog-actions"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ═══════════════════════════════════════════════════════
+const W = 960, H = 540;
+let slides = [];
+let currentSlide = 0;
+let selectedObj = null;
+let tool = 'select';
+let activeColor = '#e8ff47';
+let presentIdx = 0;
+
+let drawing = false;
+let startX = 0, startY = 0;
+let dragObj = null;
+let dragOffX = 0, dragOffY = 0;
+
+const canvas = document.getElementById('main-canvas');
+const ctx = canvas.getContext('2d');
+
+// ═══════════════════════════════════════════════════════
+//  DIALOG SYSTEM (replaces alert/prompt)
+// ═══════════════════════════════════════════════════════
+const dialogOverlay = document.getElementById('dialog-overlay');
+
+function showAlert({ icon = 'ℹ️', title = '', message = '', btnLabel = 'OK', danger = false } = {}) {
+  return new Promise(resolve => {
+    document.getElementById('dialog-icon').textContent = icon;
+    document.getElementById('dialog-title').textContent = title;
+    document.getElementById('dialog-message').textContent = message;
+    document.getElementById('dialog-input').style.display = 'none';
+
+    const actions = document.getElementById('dialog-actions');
+    actions.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = 'dialog-btn ' + (danger ? 'danger' : 'primary');
+    btn.textContent = btnLabel;
+    btn.onclick = () => { dialogOverlay.classList.remove('active'); resolve(); };
+    actions.appendChild(btn);
+
+    dialogOverlay.classList.add('active');
+    btn.focus();
+  });
+}
+
+function showPrompt({ icon = '✏️', title = '', message = '', defaultValue = '', placeholder = '', btnLabel = 'OK' } = {}) {
+  return new Promise(resolve => {
+    document.getElementById('dialog-icon').textContent = icon;
+    document.getElementById('dialog-title').textContent = title;
+    document.getElementById('dialog-message').textContent = message;
+
+    const input = document.getElementById('dialog-input');
+    input.style.display = 'block';
+    input.value = defaultValue;
+    input.placeholder = placeholder;
+
+    const actions = document.getElementById('dialog-actions');
+    actions.innerHTML = '';
+
+    const cancel = document.createElement('button');
+    cancel.className = 'dialog-btn secondary';
+    cancel.textContent = 'Abbrechen';
+    cancel.onclick = () => { dialogOverlay.classList.remove('active'); resolve(null); };
+
+    const ok = document.createElement('button');
+    ok.className = 'dialog-btn primary';
+    ok.textContent = btnLabel;
+    ok.onclick = () => { dialogOverlay.classList.remove('active'); resolve(input.value); };
+
+    actions.appendChild(cancel);
+    actions.appendChild(ok);
+
+    dialogOverlay.classList.add('active');
+    setTimeout(() => { input.focus(); input.select(); }, 50);
+
+    input.onkeydown = e => {
+      if (e.key === 'Enter') ok.click();
+      if (e.key === 'Escape') cancel.click();
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  START PAGE
+// ═══════════════════════════════════════════════════════
+function hideStartPage() {
+  document.getElementById('start-page').classList.add('hidden');
+}
+
+function showStartPage() {
+  document.getElementById('start-page').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════
+//  THEME TOGGLE
+// ═══════════════════════════════════════════════════════
+function toggleTheme() {
+  const body = document.body;
+  const currentTheme = body.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  body.setAttribute('data-theme', newTheme);
+  document.getElementById('theme-label').textContent = newTheme === 'dark' ? 'Light' : 'Dark';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  SLIDE DATA
+// ═══════════════════════════════════════════════════════
+function newSlideData(bg = '#0e0e0f') {
+  return { bg, objects: [] };
+}
+
+function addSlide() {
+  slides.push(newSlideData('#0e0e0f'));
+  currentSlide = slides.length - 1;
+  renderAll();
+}
+
+function deleteSlide(idx) {
+  if (slides.length <= 1) return;
+  slides.splice(idx, 1);
+  if (currentSlide >= slides.length) currentSlide = slides.length - 1;
+  renderAll();
+}
+
+function goToSlide(idx) {
+  currentSlide = idx;
+  selectedObj = null;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════
+function renderSlide(context, slide, width) {
+  const scale = width / W;
+  context.save();
+  context.scale(scale, scale);
+
+  // Background
+  context.fillStyle = slide.bg;
+  context.fillRect(0, 0, W, H);
+
+  // Objects
+  slide.objects.forEach(obj => {
+    context.globalAlpha = obj.opacity || 1;
+    context.fillStyle = obj.fill;
+
+    if (obj.type === 'rect') {
+      if (obj.radius) {
+        roundRect(context, obj.x, obj.y, obj.w, obj.h, obj.radius);
+        context.fill();
+      } else {
+        context.fillRect(obj.x, obj.y, obj.w, obj.h);
+      }
+      if (obj.stroke && obj.strokeWidth) {
+        context.strokeStyle = obj.stroke;
+        context.lineWidth = obj.strokeWidth;
+        context.strokeRect(obj.x, obj.y, obj.w, obj.h);
+      }
+    }
+    else if (obj.type === 'ellipse') {
+      context.beginPath();
+      context.ellipse(obj.x + obj.w/2, obj.y + obj.h/2, obj.w/2, obj.h/2, 0, 0, Math.PI*2);
+      context.fill();
+    }
+    else if (obj.type === 'line') {
+      context.strokeStyle = obj.fill;
+      context.lineWidth = obj.strokeWidth || 4;
+      context.lineCap = 'round';
+      context.beginPath();
+      context.moveTo(obj.x, obj.y);
+      context.lineTo(obj.x + obj.w, obj.y + obj.h);
+      context.stroke();
+    }
+    else if (obj.type === 'arrow') {
+      context.strokeStyle = obj.fill;
+      context.fillStyle = obj.fill;
+      context.lineWidth = obj.strokeWidth || 4;
+      context.lineCap = 'round';
+      const x2 = obj.x + obj.w, y2 = obj.y + obj.h;
+      context.beginPath();
+      context.moveTo(obj.x, obj.y);
+      context.lineTo(x2, y2);
+      context.stroke();
+      const angle = Math.atan2(obj.h, obj.w);
+      const headLen = 16;
+      context.beginPath();
+      context.moveTo(x2, y2);
+      context.lineTo(x2 - headLen*Math.cos(angle - Math.PI/6), y2 - headLen*Math.sin(angle - Math.PI/6));
+      context.lineTo(x2 - headLen*Math.cos(angle + Math.PI/6), y2 - headLen*Math.sin(angle + Math.PI/6));
+      context.closePath();
+      context.fill();
+    }
+    else if (obj.type === 'text') {
+      const font = obj.font || 'Syne';
+      let fontStyle = '';
+      if (obj.italic) fontStyle += 'italic ';
+      const fontWeight = obj.bold ? 'bold' : (obj.weight || '800');
+      context.font = `${fontStyle}${fontWeight} ${obj.size}px "${font}", sans-serif`;
+      
+      if (obj.underline) {
+        const metrics = context.measureText(obj.text);
+        context.strokeStyle = obj.fill;
+        context.lineWidth = Math.max(1, obj.size / 20);
+        context.beginPath();
+        context.moveTo(obj.x, obj.y + obj.size * 0.85);
+        context.lineTo(obj.x + metrics.width, obj.y + obj.size * 0.85);
+        context.stroke();
+      }
+      
+      context.fillText(obj.text, obj.x, obj.y + obj.size * 0.8);
+    }
+    else if (obj.type === 'image' && obj._img) {
+      context.drawImage(obj._img, obj.x, obj.y, obj.w, obj.h);
+    }
+  });
+
+  context.restore();
+}
+
+function renderAll() {
+  if (slides.length === 0) return;
+  
+  // Main canvas
+  renderSlide(ctx, slides[currentSlide], W);
+
+  // Selection highlight
+  if (selectedObj) {
+    ctx.save();
+    ctx.strokeStyle = document.body.getAttribute('data-theme') === 'dark' ? '#e8ff47' : '#4a90e2';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(selectedObj.x - 2, selectedObj.y - 2, (selectedObj.w || 0) + 4, (selectedObj.h || 0) + 4);
+    ctx.restore();
+  }
+
+  // Thumbnails
+  const container = document.getElementById('slides-container');
+  container.innerHTML = '';
+  slides.forEach((slide, i) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'slide-thumb' + (i === currentSlide ? ' active' : '');
+    thumb.onclick = () => goToSlide(i);
+
+    const thumbCanvas = document.createElement('canvas');
+    thumbCanvas.width = 320;
+    thumbCanvas.height = 180;
+    const thumbCtx = thumbCanvas.getContext('2d');
+    renderSlide(thumbCtx, slide, 320);
+    thumb.appendChild(thumbCanvas);
+
+    const num = document.createElement('div');
+    num.className = 'slide-num';
+    num.textContent = i + 1;
+    thumb.appendChild(num);
+
+    const del = document.createElement('button');
+    del.className = 'thumb-del';
+    del.textContent = '✕';
+    del.onclick = (e) => { e.stopPropagation(); deleteSlide(i); };
+    thumb.appendChild(del);
+
+    container.appendChild(thumb);
+  });
+
+  // Update properties panel
+  updatePropsPanel();
+
+  // Status
+  document.getElementById('status-slide').textContent = `Folie ${currentSlide + 1} / ${slides.length}`;
+  updateStatus();
+}
+
+function updatePropsPanel() {
+  const textProps = document.getElementById('text-props');
+  const propFill = document.getElementById('prop-fill');
+  const propOpacity = document.getElementById('prop-opacity');
+  const propOpacityVal = document.getElementById('prop-opacity-val');
+
+  if (selectedObj) {
+    propFill.value = selectedObj.fill;
+    propOpacity.value = (selectedObj.opacity || 1) * 100;
+    propOpacityVal.textContent = Math.round((selectedObj.opacity || 1) * 100) + '%';
+
+    if (selectedObj.type === 'text') {
+      textProps.style.display = 'flex';
+      const propFont = document.getElementById('prop-font');
+      const propSize = document.getElementById('prop-size');
+      const propSizeVal = document.getElementById('prop-size-val');
+      const propWeight = document.getElementById('prop-weight');
+
+      propFont.value = selectedObj.font || 'Syne';
+      propSize.value = selectedObj.size || 48;
+      propSizeVal.textContent = (selectedObj.size || 48) + 'px';
+      propWeight.value = selectedObj.bold ? '700' : (selectedObj.weight || '800');
+      
+      // Update format buttons
+      document.getElementById('prop-bold').classList.toggle('active', selectedObj.bold || false);
+      document.getElementById('prop-italic').classList.toggle('active', selectedObj.italic || false);
+      document.getElementById('prop-underline').classList.toggle('active', selectedObj.underline || false);
+      
+      // Update toolbar buttons
+      document.getElementById('btn-bold').classList.toggle('active', selectedObj.bold || false);
+      document.getElementById('btn-italic').classList.toggle('active', selectedObj.italic || false);
+      document.getElementById('btn-underline').classList.toggle('active', selectedObj.underline || false);
+    } else {
+      textProps.style.display = 'none';
+      // Clear toolbar format buttons
+      document.getElementById('btn-bold').classList.remove('active');
+      document.getElementById('btn-italic').classList.remove('active');
+      document.getElementById('btn-underline').classList.remove('active');
+    }
+  } else {
+    textProps.style.display = 'none';
+    propFill.value = activeColor;
+    propOpacity.value = 100;
+    propOpacityVal.textContent = '100%';
+    
+    // Clear toolbar format buttons
+    document.getElementById('btn-bold').classList.remove('active');
+    document.getElementById('btn-italic').classList.remove('active');
+    document.getElementById('btn-underline').classList.remove('active');
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOOLS
+// ═══════════════════════════════════════════════════════
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll('.tb-btn').forEach(btn => {
+    if (!btn.id.startsWith('btn-bold') && !btn.id.startsWith('btn-italic') && !btn.id.startsWith('btn-underline')) {
+      btn.classList.remove('active');
+    }
+  });
+  const btnMap = { select: 'btn-select', text: 'btn-text', rect: 'btn-rect', ellipse: 'btn-ellipse', line: 'btn-line', arrow: 'btn-arrow' };
+  if (btnMap[t]) document.getElementById(btnMap[t]).classList.add('active');
+  document.getElementById('status-tool').textContent = 'Werkzeug: ' + { select: 'Auswahl', text: 'Text', rect: 'Rechteck', ellipse: 'Ellipse', line: 'Linie', arrow: 'Pfeil' }[t];
+}
+
+function setColor(c) {
+  activeColor = c;
+  document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('selected'));
+  event.target.classList.add('selected');
+}
+
+// ═══════════════════════════════════════════════════════
+//  TEXT FORMATTING (B/I/U)
+// ═══════════════════════════════════════════════════════
+function toggleBold() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.bold = !selectedObj.bold;
+  renderAll();
+}
+
+function toggleItalic() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.italic = !selectedObj.italic;
+  renderAll();
+}
+
+function toggleUnderline() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.underline = !selectedObj.underline;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  MOUSE INTERACTION
+// ═══════════════════════════════════════════════════════
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+}
+
+function hitTest(x, y, obj) {
+  if (obj.type === 'text') {
+    const font = obj.font || 'Syne';
+    let fontStyle = obj.italic ? 'italic ' : '';
+    const fontWeight = obj.bold ? 'bold' : (obj.weight || '800');
+    ctx.font = `${fontStyle}${fontWeight} ${obj.size}px "${font}", sans-serif`;
+    const metrics = ctx.measureText(obj.text);
+    const w = metrics.width;
+    const h = obj.size;
+    return x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h;
+  }
+  return x >= obj.x && x <= obj.x + (obj.w || 0) && y >= obj.y && y <= obj.y + (obj.h || 0);
+}
+
+canvas.addEventListener('mousedown', e => {
+  const { x, y } = getPos(e);
+  startX = x; startY = y;
+
+  if (tool === 'select') {
+    const objs = slides[currentSlide].objects;
+    selectedObj = null;
+    for (let i = objs.length - 1; i >= 0; i--) {
+      if (hitTest(x, y, objs[i])) {
+        selectedObj = objs[i];
+        dragObj = selectedObj;
+        dragOffX = x - selectedObj.x;
+        dragOffY = y - selectedObj.y;
+        break;
+      }
+    }
+    renderAll();
+  } else {
+    drawing = true;
+  }
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (tool === 'select' && dragObj) {
+    const { x, y } = getPos(e);
+    dragObj.x = x - dragOffX;
+    dragObj.y = y - dragOffY;
+    renderAll();
+  } else if (drawing) {
+    const { x, y } = getPos(e);
+    renderSlide(ctx, slides[currentSlide], W);
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    ctx.fillStyle = activeColor;
+    ctx.strokeStyle = activeColor;
+    ctx.lineWidth = 4;
+
+    if (tool === 'rect') {
+      ctx.fillRect(startX, startY, x - startX, y - startY);
+    } else if (tool === 'ellipse') {
+      const w = x - startX, h = y - startY;
+      ctx.beginPath();
+      ctx.ellipse(startX + w/2, startY + h/2, Math.abs(w/2), Math.abs(h/2), 0, 0, Math.PI*2);
+      ctx.fill();
+    } else if (tool === 'line') {
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    } else if (tool === 'arrow') {
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      const angle = Math.atan2(y - startY, x - startX);
+      const headLen = 16;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - headLen*Math.cos(angle - Math.PI/6), y - headLen*Math.sin(angle - Math.PI/6));
+      ctx.lineTo(x - headLen*Math.cos(angle + Math.PI/6), y - headLen*Math.sin(angle + Math.PI/6));
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+});
+
+canvas.addEventListener('mouseup', e => {
+  if (tool === 'select') {
+    dragObj = null;
+    return;
+  }
+
+  if (!drawing) return;
+  drawing = false;
+
+  const { x, y } = getPos(e);
+  const w = x - startX, h = y - startY;
+  if (Math.abs(w) < 5 || Math.abs(h) < 5) return;
+
+  let obj = null;
+  if (tool === 'rect') {
+    obj = { type: 'rect', x: startX, y: startY, w, h, fill: activeColor, opacity: 1, radius: 0, stroke: 'transparent', strokeWidth: 0 };
+  } else if (tool === 'ellipse') {
+    obj = { type: 'ellipse', x: startX, y: startY, w, h, fill: activeColor, opacity: 1 };
+  } else if (tool === 'line') {
+    obj = { type: 'line', x: startX, y: startY, w, h, fill: activeColor, opacity: 1, strokeWidth: 4 };
+  } else if (tool === 'arrow') {
+    obj = { type: 'arrow', x: startX, y: startY, w, h, fill: activeColor, opacity: 1, strokeWidth: 4 };
+  }
+
+  if (obj) {
+    slides[currentSlide].objects.push(obj);
+    selectedObj = obj;
+    renderAll();
+    updateStatus();
+  }
+});
+
+canvas.addEventListener('dblclick', e => {
+  if (tool !== 'select') return;
+  const { x, y } = getPos(e);
+  const objs = slides[currentSlide].objects;
+  for (let i = objs.length - 1; i >= 0; i--) {
+    if (objs[i].type === 'text' && hitTest(x, y, objs[i])) {
+      const obj = objs[i];
+      showPrompt({
+        icon: '✏️',
+        title: 'Text bearbeiten',
+        defaultValue: obj.text,
+        placeholder: 'Text eingeben...',
+        btnLabel: 'Übernehmen'
+      }).then(t => {
+        if (t !== null) { obj.text = t; renderAll(); }
+      });
+      return;
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════════
+function deleteSelected() {
+  if (!selectedObj) return;
+  const objs = slides[currentSlide].objects;
+  const idx = objs.indexOf(selectedObj);
+  if (idx !== -1) objs.splice(idx, 1);
+  selectedObj = null;
+  renderAll();
+}
+
+function bringForward() {
+  if (!selectedObj) return;
+  const objs = slides[currentSlide].objects;
+  const i = objs.indexOf(selectedObj);
+  if (i < objs.length - 1) { [objs[i], objs[i+1]] = [objs[i+1], objs[i]]; renderAll(); }
+}
+
+function sendBackward() {
+  if (!selectedObj) return;
+  const objs = slides[currentSlide].objects;
+  const i = objs.indexOf(selectedObj);
+  if (i > 0) { [objs[i-1], objs[i]] = [objs[i], objs[i-1]]; renderAll(); }
+}
+
+function changeBg(color) {
+  slides[currentSlide].bg = color;
+  renderAll();
+}
+
+function updateStatus() {
+  document.getElementById('status-objs').textContent = slides[currentSlide].objects.length + ' Objekte';
+}
+
+// ═══════════════════════════════════════════════════════
+//  PROPERTIES UPDATES
+// ═══════════════════════════════════════════════════════
+function updateSelectedFont() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.font = document.getElementById('prop-font').value;
+  renderAll();
+}
+
+function updateSelectedSize() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  const size = parseInt(document.getElementById('prop-size').value);
+  selectedObj.size = size;
+  selectedObj.h = size;
+  document.getElementById('prop-size-val').textContent = size + 'px';
+  renderAll();
+}
+
+function updateSelectedWeight() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.weight = document.getElementById('prop-weight').value;
+  renderAll();
+}
+
+function updateSelectedFill() {
+  if (!selectedObj) return;
+  selectedObj.fill = document.getElementById('prop-fill').value;
+  renderAll();
+}
+
+function updateSelectedOpacity() {
+  if (!selectedObj) return;
+  const val = parseInt(document.getElementById('prop-opacity').value);
+  selectedObj.opacity = val / 100;
+  document.getElementById('prop-opacity-val').textContent = val + '%';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  TEXT MODAL
+// ═══════════════════════════════════════════════════════
+function openTextModal() {
+  document.getElementById('text-modal').classList.add('active');
+  document.getElementById('text-input').focus();
+}
+
+function closeTextModal() {
+  document.getElementById('text-modal').classList.remove('active');
+}
+
+function confirmText() {
+  const text = document.getElementById('text-input').value.trim();
+  if (!text) return;
+  
+  const font = document.getElementById('text-font').value;
+  const size = parseInt(document.getElementById('text-size').value) || 48;
+  const weight = document.getElementById('text-weight').value;
+  
+  const obj = { 
+    type: 'text', 
+    text, 
+    x: 80, 
+    y: 80, 
+    w: 0, 
+    h: size, 
+    fill: activeColor, 
+    size, 
+    weight,
+    font,
+    opacity: 1,
+    bold: false,
+    italic: false,
+    underline: false
+  };
+  
+  slides[currentSlide].objects.push(obj);
+  selectedObj = obj;
+  closeTextModal();
+  document.getElementById('text-input').value = '';
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  IMAGE
+// ═══════════════════════════════════════════════════════
+function addImageFromUrl() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = event => {
+      const origDataUrl = event.target.result;
+      const img = new Image();
+      img.onload = () => {
+        // Compress: max 1200px side, max ~800kb base64
+        const MAX_DIM = 1200;
+        const MAX_B64 = 800 * 1024; // 800kb in bytes
+
+        let cw = img.width, ch = img.height;
+        if (cw > MAX_DIM || ch > MAX_DIM) {
+          if (cw >= ch) { ch = Math.round(ch * MAX_DIM / cw); cw = MAX_DIM; }
+          else { cw = Math.round(cw * MAX_DIM / ch); ch = MAX_DIM; }
+        }
+
+        const tmpC = document.createElement('canvas');
+        tmpC.width = cw; tmpC.height = ch;
+        const tmpX = tmpC.getContext('2d');
+        tmpX.drawImage(img, 0, 0, cw, ch);
+
+        // Try quality reduction until under 800kb
+        let quality = 0.92;
+        let dataUrl = tmpC.toDataURL('image/jpeg', quality);
+        while (dataUrl.length * 0.75 > MAX_B64 && quality > 0.3) {
+          quality -= 0.08;
+          dataUrl = tmpC.toDataURL('image/jpeg', quality);
+        }
+
+        const finalImg = new Image();
+        finalImg.onload = () => {
+          const ratio = cw / ch;
+          const w = Math.min(400, cw);
+          const h = w / ratio;
+          const obj = { type: 'image', x: 50, y: 50, w, h, fill: 'transparent', opacity: 1, _img: finalImg, _imgData: dataUrl };
+          slides[currentSlide].objects.push(obj);
+          selectedObj = obj;
+          renderAll();
+        };
+        finalImg.src = dataUrl;
+      };
+      img.src = origDataUrl;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+// ═══════════════════════════════════════════════════════
+//  SAVE/LOAD PROJECT
+// ═══════════════════════════════════════════════════════
+function saveProject() {
+  hideStartPage();
+  
+  const project = {
+    version: '1.0',
+    slides: slides.map(slide => ({
+      bg: slide.bg,
+      objects: slide.objects.map(obj => {
+        const clone = { ...obj };
+        if (obj.type === 'image' && obj._img) {
+          if (obj._imgData) {
+            // Already compressed base64 from file upload
+            clone._imgData = obj._imgData;
+          } else {
+            // Fallback: draw to canvas (URL-loaded images)
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = obj._img.width;
+            tempCanvas.height = obj._img.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(obj._img, 0, 0);
+            clone._imgData = tempCanvas.toDataURL('image/jpeg', 0.85);
+          }
+          delete clone._img;
+        }
+        return clone;
+      })
+    }))
+  };
+
+  const json = JSON.stringify(project, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'presentation.slideforge';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadProject() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.slideforge';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = event => {
+      try {
+        const project = JSON.parse(event.target.result);
+        
+        slides = project.slides.map(slide => ({
+          bg: slide.bg,
+          objects: slide.objects.map(obj => {
+            if (obj.type === 'image' && obj._imgData) {
+              const img = new Image();
+              img.src = obj._imgData;
+              obj._img = img;
+              delete obj._imgData;
+            }
+            return obj;
+          })
+        }));
+        
+        currentSlide = 0;
+        selectedObj = null;
+        hideStartPage();
+        renderAll();
+      } catch (err) {
+        showAlert({ icon: '⚠️', title: 'Fehler beim Laden', message: err.message, btnLabel: 'OK', danger: true });
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function newPresentation() {
+  hideStartPage();
+  
+  const s1 = newSlideData('#0e0e0f');
+  
+  slides = [s1];
+  currentSlide = 0;
+  selectedObj = null;
+  renderAll();
+}
+
+function loadStartTemplate() {
+  hideStartPage();
+  
+  // Starter slide with a headline
+  const s1 = newSlideData('#0e0e0f');
+  s1.objects.push({
+    type: 'text', text: 'SlideForge Pro',
+    x: 80, y: 200, w: 700, h: 72,
+    fill: '#e8ff47', size: 72, weight: '800', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+  s1.objects.push({
+    type: 'text', text: 'Professionelle Präsentationen erstellen',
+    x: 82, y: 290, w: 500, h: 32,
+    fill: '#777', size: 32, weight: '400', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+  s1.objects.push({
+    type: 'rect', x: 80, y: 180, w: 8, h: 160,
+    fill: '#e8ff47', opacity: 1, radius: 4, stroke: 'transparent', strokeWidth: 0
+  });
+
+  const s2 = newSlideData('#161620');
+  s2.objects.push({
+    type: 'rect', x: 0, y: 0, w: W, h: 10,
+    fill: '#7c5cfc', opacity: 1, radius: 0, stroke: 'transparent', strokeWidth: 0
+  });
+  s2.objects.push({
+    type: 'text', text: 'Features',
+    x: 80, y: 80, w: 600, h: 52,
+    fill: '#f0f0f0', size: 52, weight: '800', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+  s2.objects.push({
+    type: 'text', text: '→ 50+ Schriftarten inkl. Classics',
+    x: 80, y: 180, w: 700, h: 36,
+    fill: '#aaa', size: 32, weight: '400', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+  s2.objects.push({
+    type: 'text', text: '→ B/I/U Formatierung',
+    x: 80, y: 240, w: 700, h: 36,
+    fill: '#aaa', size: 32, weight: '400', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+  s2.objects.push({
+    type: 'text', text: '→ Light & Dark Mode',
+    x: 80, y: 300, w: 700, h: 36,
+    fill: '#aaa', size: 32, weight: '400', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+
+  const s3 = newSlideData('#0a1020');
+  s3.objects.push({
+    type: 'ellipse', x: 600, y: 50, w: 400, h: 400,
+    fill: '#7c5cfc', opacity: 0.15
+  });
+  s3.objects.push({
+    type: 'text', text: 'Viel Erfolg!',
+    x: 80, y: 160, w: 600, h: 120,
+    fill: '#fff', size: 120, weight: '800', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+  s3.objects.push({
+    type: 'text', text: 'Erstellt mit SlideForge Pro',
+    x: 83, y: 310, w: 400, h: 36,
+    fill: '#4ecdc4', size: 32, weight: '600', font: 'Syne', opacity: 1, bold: false, italic: false, underline: false
+  });
+
+  slides = [s1, s2, s3];
+  currentSlide = 0;
+  selectedObj = null;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+//  EXPORT
+// ═══════════════════════════════════════════════════════
+function exportPNG() {
+  const tmpCanvas = document.createElement('canvas');
+  tmpCanvas.width = W; tmpCanvas.height = H;
+  const tmpCtx = tmpCanvas.getContext('2d');
+  renderSlide(tmpCtx, slides[currentSlide], W);
+
+  const a = document.createElement('a');
+  a.download = `folie-${currentSlide+1}.png`;
+  a.href = tmpCanvas.toDataURL('image/png');
+  a.click();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PRESENTATION MODE
+// ═══════════════════════════════════════════════════════
+const pOverlay = document.getElementById('present-overlay');
+const pCanvas = document.getElementById('present-canvas');
+const pCtx = pCanvas.getContext('2d');
+
+function startPresentation() {
+  if (slides.length === 0) return;
+  presentIdx = currentSlide;
+  pOverlay.classList.add('active');
+  updatePresentNav();
+  renderPresent();
+}
+
+function stopPresentation() {
+  pOverlay.classList.remove('active');
+}
+
+function presentNav(dir) {
+  presentIdx = (presentIdx + dir + slides.length) % slides.length;
+  updatePresentNav();
+  renderPresent();
+}
+
+function updatePresentNav() {
+  document.getElementById('present-prev').style.opacity = slides.length <= 1 ? '0.2' : '1';
+  document.getElementById('present-next').style.opacity = slides.length <= 1 ? '0.2' : '1';
+}
+
+function renderPresent() {
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const scale = Math.min(vw / W, vh / H);
+  pCanvas.width = W * scale;
+  pCanvas.height = H * scale;
+  renderSlide(pCtx, slides[presentIdx], pCanvas.width);
+  document.getElementById('present-counter').textContent = `${presentIdx+1} / ${slides.length}`;
+}
+
+pOverlay.addEventListener('click', e => {
+  if (e.target === document.getElementById('present-exit')) return;
+  if (e.target === document.getElementById('present-prev')) return;
+  if (e.target === document.getElementById('present-next')) return;
+  presentNav(1);
+});
+
+// ═══════════════════════════════════════════════════════
+//  KEYBOARD
+// ═══════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+  if (pOverlay.classList.contains('active')) {
+    if (e.key === 'ArrowRight' || e.key === ' ') { presentNav(1); }
+    if (e.key === 'ArrowLeft') { presentNav(-1); }
+    if (e.key === 'Escape') stopPresentation();
+    return;
+  }
+
+  if (e.key === 'v' || e.key === 'V') setTool('select');
+  if (e.key === 't' || e.key === 'T') { setTool('select'); openTextModal(); }
+  if (e.key === 'r' || e.key === 'R') setTool('rect');
+  if (e.key === 'e' || e.key === 'E') setTool('ellipse');
+  if (e.key === 'l' || e.key === 'L') setTool('line');
+  if (e.key === 'a' || e.key === 'A') setTool('arrow');
+  if (e.key === 'b' || e.key === 'B') toggleBold();
+  if (e.key === 'i' || e.key === 'I') toggleItalic();
+  if (e.key === 'u' || e.key === 'U') toggleUnderline();
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedObj) deleteSelected();
+  if (e.key === 'Escape') { selectedObj = null; renderAll(); }
+  if (e.key === 'F5') { e.preventDefault(); startPresentation(); }
+
+  // Nudge
+  if (selectedObj && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
+    const d = e.shiftKey ? 10 : 1;
+    if (e.key === 'ArrowLeft') selectedObj.x -= d;
+    if (e.key === 'ArrowRight') selectedObj.x += d;
+    if (e.key === 'ArrowUp') selectedObj.y -= d;
+    if (e.key === 'ArrowDown') selectedObj.y += d;
+    renderAll();
+    e.preventDefault();
+  }
+
+  // Save/Load shortcuts
+  if (e.ctrlKey || e.metaKey) {
+    if (e.key === 's') { e.preventDefault(); saveProject(); }
+    if (e.key === 'o') { e.preventDefault(); loadProject(); }
+  }
+});
+
+// ═══════════════════════════════════════════════════════
+//  TEXT MODAL KEYBOARD
+// ═══════════════════════════════════════════════════════
+document.getElementById('text-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmText();
+  if (e.key === 'Escape') closeTextModal();
+});
+
+// ═══════════════════════════════════════════════════════
+//  SCALE CANVAS
+// ═══════════════════════════════════════════════════════
+function scaleCanvas() {
+  const area = document.getElementById('canvas-area');
+  const aw = area.clientWidth - 48;
+  const ah = area.clientHeight - 48;
+  const scale = Math.min(aw / W, ah / H, 1);
+  canvas.style.width = (W * scale) + 'px';
+  canvas.style.height = (H * scale) + 'px';
+}
+window.addEventListener('resize', scaleCanvas);
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+(function init() {
+  scaleCanvas();
+  setTool('select');
+})();
+</script>
+</body>
+</html>
