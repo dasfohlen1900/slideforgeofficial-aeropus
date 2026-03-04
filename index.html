@@ -478,7 +478,95 @@
   .align-btn:hover { background: var(--border); }
   .align-btn.active { background: var(--accent); color: #000; }
 
-  /* ── STATUS BAR ── */
+  /* ── CUSTOM FONT DROPDOWN ── */
+  .font-dropdown {
+    position: relative;
+    flex: 1;
+  }
+
+  .font-trigger {
+    width: 100%;
+    height: 30px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    padding: 0 28px 0 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: border-color .15s;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .font-trigger:hover, .font-trigger.open { border-color: var(--accent3); }
+  .font-trigger::after {
+    content: '▾';
+    position: absolute;
+    right: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .font-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0; right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    z-index: 500;
+    overflow-y: auto;
+    max-height: 280px;
+  }
+  .font-list.open { display: block; }
+  .font-list::-webkit-scrollbar { width: 4px; }
+  .font-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .font-group-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 8px 10px 4px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .font-option {
+    padding: 6px 10px;
+    font-size: 15px;
+    cursor: pointer;
+    color: var(--text);
+    transition: background .1s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .font-option:hover { background: var(--border); }
+  .font-option.selected { color: var(--accent); }
+
+  .font-search {
+    width: 100%;
+    background: var(--panel);
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px 10px;
+    outline: none;
+    border-radius: 8px 8px 0 0;
+  }
+  .font-search::placeholder { color: var(--muted); }
+
+
   #status {
     height: 28px;
     background: var(--surface);
@@ -935,73 +1023,15 @@
       <div class="prop-label">Text-Eigenschaften</div>
       
       <div class="prop-row">
-        <select id="prop-font" class="prop-select" onchange="updateSelectedFont()">
-          <optgroup label="Classic Fonts">
-            <option value="Arial">Arial</option>
-            <option value="Verdana">Verdana</option>
-            <option value="Times New Roman">Times New Roman</option>
-            <option value="Georgia">Georgia</option>
-            <option value="Courier New">Courier New</option>
-            <option value="Trebuchet MS">Trebuchet MS</option>
-            <option value="Comic Sans MS">Comic Sans MS</option>
-            <option value="Impact">Impact</option>
-            <option value="Tahoma">Tahoma</option>
-          </optgroup>
-          <optgroup label="Modern Fonts">
-            <option value="Inter">Inter</option>
-            <option value="Roboto">Roboto</option>
-            <option value="Open Sans">Open Sans</option>
-            <option value="Lato">Lato</option>
-            <option value="Montserrat">Montserrat</option>
-            <option value="Raleway">Raleway</option>
-            <option value="Poppins">Poppins</option>
-            <option value="Syne">Syne</option>
-            <option value="Space Grotesk">Space Grotesk</option>
-            <option value="Fira Sans">Fira Sans</option>
-            <option value="Quicksand">Quicksand</option>
-            <option value="Nunito">Nunito</option>
-            <option value="Rubik">Rubik</option>
-            <option value="Work Sans">Work Sans</option>
-            <option value="Barlow">Barlow</option>
-            <option value="Outfit">Outfit</option>
-            <option value="Manrope">Manrope</option>
-            <option value="Urbanist">Urbanist</option>
-            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
-            <option value="IBM Plex Sans">IBM Plex Sans</option>
-            <option value="Archivo">Archivo</option>
-            <option value="Cabin">Cabin</option>
-            <option value="Figtree">Figtree</option>
-            <option value="Lexend">Lexend</option>
-            <option value="Karla">Karla</option>
-          </optgroup>
-          <optgroup label="Serif Fonts">
-            <option value="Playfair Display">Playfair Display</option>
-            <option value="Merriweather">Merriweather</option>
-            <option value="DM Serif Display">DM Serif Display</option>
-            <option value="Crimson Text">Crimson Text</option>
-            <option value="Bitter">Bitter</option>
-            <option value="Arvo">Arvo</option>
-            <option value="Zilla Slab">Zilla Slab</option>
-            <option value="Spectral">Spectral</option>
-            <option value="Cormorant">Cormorant</option>
-          </optgroup>
-          <optgroup label="Display Fonts">
-            <option value="Bebas Neue">Bebas Neue</option>
-            <option value="Oswald">Oswald</option>
-            <option value="Abril Fatface">Abril Fatface</option>
-            <option value="Righteous">Righteous</option>
-          </optgroup>
-          <optgroup label="Handwriting">
-            <option value="Pacifico">Pacifico</option>
-            <option value="Lobster">Lobster</option>
-            <option value="Caveat">Caveat</option>
-            <option value="Permanent Marker">Permanent Marker</option>
-            <option value="Shadows Into Light">Shadows Into Light</option>
-          </optgroup>
-          <optgroup label="Monospace">
-            <option value="DM Mono">DM Mono</option>
-          </optgroup>
-        </select>
+        <div class="font-dropdown" id="font-dropdown">
+          <div class="font-trigger" id="font-trigger" onclick="toggleFontDropdown()">
+            <span id="font-trigger-label" style="font-family:'Syne',sans-serif">Syne</span>
+          </div>
+          <div class="font-list" id="font-list">
+            <input class="font-search" id="font-search" type="text" placeholder="Suchen…" oninput="filterFonts(this.value)" onclick="event.stopPropagation()">
+            <div id="font-options"></div>
+          </div>
+        </div>
       </div>
 
       <div class="prop-row">
@@ -1241,16 +1271,32 @@ function showAlert({ icon = 'ℹ️', title = '', message = '', btnLabel = 'OK',
   });
 }
 
-function showPrompt({ icon = '✏️', title = '', message = '', defaultValue = '', placeholder = '', btnLabel = 'OK' } = {}) {
+function showPrompt({ icon = '✏️', title = '', message = '', defaultValue = '', placeholder = '', btnLabel = 'OK', multiline = false } = {}) {
   return new Promise(resolve => {
     document.getElementById('dialog-icon').textContent = icon;
     document.getElementById('dialog-title').textContent = title;
     document.getElementById('dialog-message').textContent = message;
 
-    const input = document.getElementById('dialog-input');
-    input.style.display = 'block';
-    input.value = defaultValue;
-    input.placeholder = placeholder;
+    // Remove old input/textarea, create fresh
+    const oldInput = document.getElementById('dialog-input');
+    const parent = oldInput.parentNode;
+
+    let field;
+    if (multiline) {
+      field = document.createElement('textarea');
+      field.rows = 6;
+      field.style.resize = 'vertical';
+      field.style.lineHeight = '1.5';
+    } else {
+      field = document.createElement('input');
+      field.type = 'text';
+    }
+    field.id = 'dialog-input';
+    field.className = 'dialog-input';
+    field.value = defaultValue;
+    field.placeholder = placeholder;
+    field.style.display = 'block';
+    parent.replaceChild(field, oldInput);
 
     const actions = document.getElementById('dialog-actions');
     actions.innerHTML = '';
@@ -1263,16 +1309,17 @@ function showPrompt({ icon = '✏️', title = '', message = '', defaultValue = 
     const ok = document.createElement('button');
     ok.className = 'dialog-btn primary';
     ok.textContent = btnLabel;
-    ok.onclick = () => { dialogOverlay.classList.remove('active'); resolve(input.value); };
+    ok.onclick = () => { dialogOverlay.classList.remove('active'); resolve(field.value); };
 
     actions.appendChild(cancel);
     actions.appendChild(ok);
 
     dialogOverlay.classList.add('active');
-    setTimeout(() => { input.focus(); input.select(); }, 50);
+    setTimeout(() => { field.focus(); field.select ? field.select() : null; }, 50);
 
-    input.onkeydown = e => {
-      if (e.key === 'Enter') ok.click();
+    field.onkeydown = e => {
+      if (!multiline && e.key === 'Enter') ok.click();
+      if (multiline && e.key === 'Enter' && (e.ctrlKey || e.shiftKey)) ok.click();
       if (e.key === 'Escape') cancel.click();
     };
   });
@@ -1288,6 +1335,85 @@ function hideStartPage() {
 function showStartPage() {
   document.getElementById('start-page').classList.remove('hidden');
 }
+
+// ═══════════════════════════════════════════════════════
+//  CUSTOM FONT DROPDOWN
+// ═══════════════════════════════════════════════════════
+const FONT_GROUPS = [
+  { label: 'Classic', fonts: ['Arial','Verdana','Times New Roman','Georgia','Courier New','Trebuchet MS','Impact','Tahoma'] },
+  { label: 'Modern', fonts: ['Inter','Roboto','Open Sans','Lato','Montserrat','Raleway','Poppins','Syne','Space Grotesk','Fira Sans','Quicksand','Nunito','Rubik','Work Sans','Barlow','Outfit','Manrope','Urbanist','Plus Jakarta Sans','IBM Plex Sans','Archivo','Cabin','Figtree','Lexend','Karla'] },
+  { label: 'Serif', fonts: ['Playfair Display','Merriweather','DM Serif Display','Crimson Text','Bitter','Arvo','Zilla Slab','Spectral','Cormorant'] },
+  { label: 'Display', fonts: ['Bebas Neue','Oswald','Abril Fatface','Righteous'] },
+  { label: 'Handwriting', fonts: ['Pacifico','Lobster','Caveat','Permanent Marker','Shadows Into Light'] },
+  { label: 'Monospace', fonts: ['DM Mono'] },
+];
+
+let currentFontValue = 'Syne';
+
+function buildFontOptions(filter = '') {
+  const container = document.getElementById('font-options');
+  container.innerHTML = '';
+  const q = filter.toLowerCase();
+  FONT_GROUPS.forEach(group => {
+    const matches = group.fonts.filter(f => !q || f.toLowerCase().includes(q));
+    if (!matches.length) return;
+    const lbl = document.createElement('div');
+    lbl.className = 'font-group-label';
+    lbl.textContent = group.label;
+    container.appendChild(lbl);
+    matches.forEach(font => {
+      const el = document.createElement('div');
+      el.className = 'font-option' + (font === currentFontValue ? ' selected' : '');
+      el.textContent = font;
+      el.style.fontFamily = `"${font}", sans-serif`;
+      el.dataset.font = font;
+      el.onclick = () => selectFont(font);
+      container.appendChild(el);
+    });
+  });
+}
+
+function selectFont(font) {
+  currentFontValue = font;
+  const trigger = document.getElementById('font-trigger-label');
+  trigger.textContent = font;
+  trigger.style.fontFamily = `"${font}", sans-serif`;
+  closeFontDropdown();
+  updateSelectedFont();
+}
+
+function toggleFontDropdown() {
+  const list = document.getElementById('font-list');
+  const trigger = document.getElementById('font-trigger');
+  const isOpen = list.classList.contains('open');
+  if (isOpen) { closeFontDropdown(); return; }
+  buildFontOptions();
+  list.classList.add('open');
+  trigger.classList.add('open');
+  document.getElementById('font-search').value = '';
+  document.getElementById('font-search').focus();
+  // Scroll selected into view
+  setTimeout(() => {
+    const sel = list.querySelector('.font-option.selected');
+    if (sel) sel.scrollIntoView({ block: 'nearest' });
+  }, 30);
+}
+
+function closeFontDropdown() {
+  document.getElementById('font-list').classList.remove('open');
+  document.getElementById('font-trigger').classList.remove('open');
+}
+
+function filterFonts(q) {
+  buildFontOptions(q);
+}
+
+// Close on outside click
+document.addEventListener('click', e => {
+  if (!document.getElementById('font-dropdown').contains(e.target)) {
+    closeFontDropdown();
+  }
+});
 
 // ═══════════════════════════════════════════════════════
 //  THEME TOGGLE
@@ -1581,12 +1707,16 @@ function updatePropsPanel() {
 
     if (selectedObj.type === 'text') {
       textProps.style.display = 'flex';
-      const propFont = document.getElementById('prop-font');
+      
       const propSize = document.getElementById('prop-size');
       const propSizeVal = document.getElementById('prop-size-val');
       const propWeight = document.getElementById('prop-weight');
 
-      propFont.value = selectedObj.font || 'Syne';
+      const font = selectedObj.font || 'Syne';
+      currentFontValue = font;
+      const trigger = document.getElementById('font-trigger-label');
+      trigger.textContent = font;
+      trigger.style.fontFamily = `"${font}", sans-serif`;
       propSize.value = selectedObj.size || 48;
       propSizeVal.textContent = (selectedObj.size || 48) + 'px';
       propWeight.value = selectedObj.bold ? '700' : (selectedObj.weight || '800');
@@ -1979,8 +2109,9 @@ canvas.addEventListener('dblclick', e => {
         icon: '✏️',
         title: 'Text bearbeiten',
         defaultValue: obj.text,
-        placeholder: 'Text eingeben...',
-        btnLabel: 'Übernehmen'
+        placeholder: 'Text eingeben…',
+        btnLabel: 'Übernehmen',
+        multiline: true
       }).then(t => {
         if (t !== null) { obj.text = t; renderAll(); }
       });
@@ -2029,7 +2160,7 @@ function updateStatus() {
 // ═══════════════════════════════════════════════════════
 function updateSelectedFont() {
   if (!selectedObj || selectedObj.type !== 'text') return;
-  selectedObj.font = document.getElementById('prop-font').value;
+  selectedObj.font = currentFontValue;
   renderAll();
 }
 
@@ -2115,8 +2246,12 @@ function addImageFromUrl() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*';
+  input.style.display = 'none';
+  document.body.appendChild(input);
+
   input.onchange = e => {
     const file = e.target.files[0];
+    document.body.removeChild(input);
     if (!file) return;
 
     const reader = new FileReader();
@@ -2124,9 +2259,8 @@ function addImageFromUrl() {
       const origDataUrl = event.target.result;
       const img = new Image();
       img.onload = () => {
-        // Compress: max 1200px side, max ~800kb base64
         const MAX_DIM = 1200;
-        const MAX_B64 = 800 * 1024; // 800kb in bytes
+        const MAX_B64 = 800 * 1024;
 
         let cw = img.width, ch = img.height;
         if (cw > MAX_DIM || ch > MAX_DIM) {
@@ -2136,10 +2270,8 @@ function addImageFromUrl() {
 
         const tmpC = document.createElement('canvas');
         tmpC.width = cw; tmpC.height = ch;
-        const tmpX = tmpC.getContext('2d');
-        tmpX.drawImage(img, 0, 0, cw, ch);
+        tmpC.getContext('2d').drawImage(img, 0, 0, cw, ch);
 
-        // Try quality reduction until under 800kb
         let quality = 0.92;
         let dataUrl = tmpC.toDataURL('image/jpeg', quality);
         while (dataUrl.length * 0.75 > MAX_B64 && quality > 0.3) {
@@ -2163,6 +2295,7 @@ function addImageFromUrl() {
     };
     reader.readAsDataURL(file);
   };
+
   input.click();
 }
 
@@ -2171,41 +2304,50 @@ function addImageFromUrl() {
 // ═══════════════════════════════════════════════════════
 function saveProject() {
   hideStartPage();
-  
-  const project = {
-    version: '1.0',
-    slides: slides.map(slide => ({
-      bg: slide.bg,
-      objects: slide.objects.map(obj => {
-        const clone = { ...obj };
-        if (obj.type === 'image' && obj._img) {
-          if (obj._imgData) {
-            // Already compressed base64 from file upload
-            clone._imgData = obj._imgData;
-          } else {
-            // Fallback: draw to canvas (URL-loaded images)
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = obj._img.width;
-            tempCanvas.height = obj._img.height;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.drawImage(obj._img, 0, 0);
-            clone._imgData = tempCanvas.toDataURL('image/jpeg', 0.85);
-          }
-          delete clone._img;
-        }
-        return clone;
-      })
-    }))
-  };
 
-  const json = JSON.stringify(project, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'presentation.slideforge';
-  a.click();
-  URL.revokeObjectURL(url);
+  showPrompt({
+    icon: '💾',
+    title: 'Speichern als…',
+    defaultValue: 'presentation',
+    placeholder: 'Dateiname',
+    btnLabel: 'Speichern'
+  }).then(name => {
+    if (name === null) return;
+    const filename = (name.trim() || 'presentation').replace(/\.slideforge$/i, '') + '.slideforge';
+
+    const project = {
+      version: '1.0',
+      slides: slides.map(slide => ({
+        bg: slide.bg,
+        objects: slide.objects.map(obj => {
+          const clone = { ...obj };
+          if (obj.type === 'image' && obj._img) {
+            if (obj._imgData) {
+              clone._imgData = obj._imgData;
+            } else {
+              const tempCanvas = document.createElement('canvas');
+              tempCanvas.width = obj._img.width;
+              tempCanvas.height = obj._img.height;
+              const tempCtx = tempCanvas.getContext('2d');
+              tempCtx.drawImage(obj._img, 0, 0);
+              clone._imgData = tempCanvas.toDataURL('image/jpeg', 0.85);
+            }
+            delete clone._img;
+          }
+          return clone;
+        })
+      }))
+    };
+
+    const json = JSON.stringify(project, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
 }
 
 function loadProject() {
@@ -2354,11 +2496,26 @@ function startPresentation() {
   pOverlay.classList.add('active');
   updatePresentNav();
   renderPresent();
+  // Request fullscreen
+  if (pOverlay.requestFullscreen) pOverlay.requestFullscreen();
+  else if (pOverlay.webkitRequestFullscreen) pOverlay.webkitRequestFullscreen();
 }
 
 function stopPresentation() {
   pOverlay.classList.remove('active');
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
 }
+
+// Re-render on fullscreen resize
+document.addEventListener('fullscreenchange', () => {
+  if (pOverlay.classList.contains('active')) renderPresent();
+});
+document.addEventListener('webkitfullscreenchange', () => {
+  if (pOverlay.classList.contains('active')) renderPresent();
+});
 
 function presentNav(dir) {
   presentIdx = (presentIdx + dir + slides.length) % slides.length;
