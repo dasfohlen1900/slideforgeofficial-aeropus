@@ -1558,12 +1558,19 @@ function hitTest(x, y, obj) {
     const h = obj.size;
     return x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h;
   }
-  return x >= obj.x && x <= obj.x + (obj.w || 0) && y >= obj.y && y <= obj.y + (obj.h || 0);
+  const ox = Math.min(obj.x, obj.x + (obj.w || 0));
+  const oy = Math.min(obj.y, obj.y + (obj.h || 0));
+  const ow = Math.abs(obj.w || 0);
+  const oh = Math.abs(obj.h || 0);
+  return x >= ox && x <= ox + ow && y >= oy && y <= oy + oh;
 }
+
+let hasDragged = false;
 
 canvas.addEventListener('mousedown', e => {
   const { x, y } = getPos(e);
   startX = x; startY = y;
+  hasDragged = false;
 
   if (tool === 'select') {
     const objs = slides[currentSlide].objects;
@@ -1586,6 +1593,7 @@ canvas.addEventListener('mousedown', e => {
 canvas.addEventListener('mousemove', e => {
   if (tool === 'select' && dragObj) {
     const { x, y } = getPos(e);
+    hasDragged = true;
     dragObj.x = x - dragOffX;
     dragObj.y = y - dragOffY;
     renderAll();
@@ -1631,6 +1639,7 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mouseup', e => {
   if (tool === 'select') {
     dragObj = null;
+    hasDragged = false;
     return;
   }
 
@@ -1639,7 +1648,7 @@ canvas.addEventListener('mouseup', e => {
 
   const { x, y } = getPos(e);
   const w = x - startX, h = y - startY;
-  if (Math.abs(w) < 5 || Math.abs(h) < 5) return;
+  if (Math.abs(w) < 8 && Math.abs(h) < 8) { renderAll(); return; }
 
   let obj = null;
   if (tool === 'rect') {
