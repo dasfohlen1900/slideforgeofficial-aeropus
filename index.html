@@ -1251,24 +1251,52 @@ function showStartPage() {
 // ═══════════════════════════════════════════════════════
 //  THEME TOGGLE
 // ═══════════════════════════════════════════════════════
+function getThemeSlideBg() {
+  return document.body.getAttribute('data-theme') === 'light' ? '#ffffff' : '#0e0e0f';
+}
+
+function applyTheme(theme) {
+  document.body.setAttribute('data-theme', theme);
+  document.getElementById('theme-label').textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
 function toggleTheme() {
-  const body = document.body;
-  const currentTheme = body.getAttribute('data-theme');
+  const currentTheme = document.body.getAttribute('data-theme');
   const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  body.setAttribute('data-theme', newTheme);
-  document.getElementById('theme-label').textContent = newTheme === 'dark' ? 'Light' : 'Dark';
+  applyTheme(newTheme);
+  localStorage.setItem('sfp-theme', newTheme);
+
+  // Update all slide backgrounds based on luminance
+  slides.forEach(slide => {
+    if (isBgDark(slide.bg) && newTheme === 'light') {
+      slide.bg = '#ffffff';
+    } else if (!isBgDark(slide.bg) && newTheme === 'dark') {
+      slide.bg = '#0e0e0f';
+    }
+  });
+
+  document.getElementById('bg-color-picker').value =
+    slides[currentSlide] ? slides[currentSlide].bg : (newTheme === 'dark' ? '#0e0e0f' : '#ffffff');
   renderAll();
+}
+
+// Returns true if hex color is perceptually dark (luminance < 0.4)
+function isBgDark(hex) {
+  const r = parseInt(hex.slice(1,3), 16) / 255;
+  const g = parseInt(hex.slice(3,5), 16) / 255;
+  const b = parseInt(hex.slice(5,7), 16) / 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b < 0.4;
 }
 
 // ═══════════════════════════════════════════════════════
 //  SLIDE DATA
 // ═══════════════════════════════════════════════════════
-function newSlideData(bg = '#0e0e0f') {
-  return { bg, objects: [] };
+function newSlideData(bg) {
+  return { bg: bg ?? getThemeSlideBg(), objects: [] };
 }
 
 function addSlide() {
-  slides.push(newSlideData('#0e0e0f'));
+  slides.push(newSlideData());
   currentSlide = slides.length - 1;
   renderAll();
 }
@@ -1317,9 +1345,12 @@ function renderSlide(context, slide, width) {
       }
     }
     else if (obj.type === 'ellipse') {
-      context.beginPath();
-      context.ellipse(obj.x + obj.w/2, obj.y + obj.h/2, obj.w/2, obj.h/2, 0, 0, Math.PI*2);
-      context.fill();
+      const rx = Math.abs(obj.w / 2), ry = Math.abs(obj.h / 2);
+      if (rx > 0 && ry > 0) {
+        context.beginPath();
+        context.ellipse(obj.x + obj.w/2, obj.y + obj.h/2, rx, ry, 0, 0, Math.PI*2);
+        context.fill();
+      }
     }
     else if (obj.type === 'line') {
       context.strokeStyle = obj.fill;
@@ -1382,13 +1413,25 @@ function renderAll() {
   // Main canvas
   renderSlide(ctx, slides[currentSlide], W);
 
-  // Selection highlight
+  // Selection highlight + resize handles
   if (selectedObj) {
+    const accentColor = document.body.getAttribute('data-theme') === 'dark' ? '#e8ff47' : '#4a90e2';
+    const bx = getObjBounds(selectedObj);
     ctx.save();
-    ctx.strokeStyle = document.body.getAttribute('data-theme') === 'dark' ? '#e8ff47' : '#4a90e2';
+    ctx.strokeStyle = accentColor;
     ctx.lineWidth = 2;
     ctx.setLineDash([4, 4]);
-    ctx.strokeRect(selectedObj.x - 2, selectedObj.y - 2, (selectedObj.w || 0) + 4, (selectedObj.h || 0) + 4);
+    ctx.strokeRect(bx.x - 2, bx.y - 2, bx.w + 4, bx.h + 4);
+    ctx.setLineDash([]);
+    for (const h of getHandles(bx)) {
+      ctx.fillStyle = '#fff';
+      ctx.strokeStyle = accentColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(h.cx, h.cy, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
     ctx.restore();
   }
 
@@ -1547,6 +1590,51 @@ function getPos(e) {
   return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
 }
 
+// ── RESIZE HANDLE HELPERS ──
+function getObjBounds(obj) {
+  if (obj.type === 'text') {
+    const font = obj.font || 'Syne';
+    let fontStyle = obj.italic ? 'italic ' : '';
+    const fontWeight = obj.bold ? 'bold' : (obj.weight || '800');
+    ctx.font = `${fontStyle}${fontWeight} ${obj.size}px "${font}", sans-serif`;
+    const metrics = ctx.measureText(obj.text);
+    return { x: obj.x, y: obj.y, w: metrics.width, h: obj.size };
+  }
+  const ox = Math.min(obj.x, obj.x + (obj.w || 0));
+  const oy = Math.min(obj.y, obj.y + (obj.h || 0));
+  return { x: ox, y: oy, w: Math.abs(obj.w || 0), h: Math.abs(obj.h || 0) };
+}
+
+// 8 handles: nw, n, ne, e, se, s, sw, w
+function getHandles(bx) {
+  const { x, y, w, h } = bx;
+  return [
+    { id: 'nw', cx: x,       cy: y       },
+    { id: 'n',  cx: x+w/2,   cy: y       },
+    { id: 'ne', cx: x+w,     cy: y       },
+    { id: 'e',  cx: x+w,     cy: y+h/2   },
+    { id: 'se', cx: x+w,     cy: y+h     },
+    { id: 's',  cx: x+w/2,   cy: y+h     },
+    { id: 'sw', cx: x,       cy: y+h     },
+    { id: 'w',  cx: x,       cy: y+h/2   },
+  ];
+}
+
+const HANDLE_CURSORS = {
+  nw: 'nw-resize', n: 'n-resize', ne: 'ne-resize',
+  e: 'e-resize', se: 'se-resize', s: 's-resize',
+  sw: 'sw-resize', w: 'w-resize'
+};
+
+function hitTestHandle(x, y, obj) {
+  if (!obj) return null;
+  const bx = getObjBounds(obj);
+  for (const h of getHandles(bx)) {
+    if (Math.abs(x - h.cx) <= 7 && Math.abs(y - h.cy) <= 7) return h.id;
+  }
+  return null;
+}
+
 function hitTest(x, y, obj) {
   if (obj.type === 'text') {
     const font = obj.font || 'Syne';
@@ -1566,13 +1654,31 @@ function hitTest(x, y, obj) {
 }
 
 let hasDragged = false;
+let resizeHandle = null;
+let resizeStartBounds = null;
 
 canvas.addEventListener('mousedown', e => {
   const { x, y } = getPos(e);
   startX = x; startY = y;
   hasDragged = false;
+  resizeHandle = null;
+  resizeStartBounds = null;
 
   if (tool === 'select') {
+    // Check resize handle first
+    if (selectedObj) {
+      const h = hitTestHandle(x, y, selectedObj);
+      if (h) {
+        resizeHandle = h;
+        const bx = getObjBounds(selectedObj);
+        resizeStartBounds = {
+          ox: bx.x, oy: bx.y, ow: bx.w, oh: bx.h,
+          fontSize: selectedObj.type === 'text' ? selectedObj.size : null
+        };
+        return;
+      }
+    }
+
     const objs = slides[currentSlide].objects;
     selectedObj = null;
     for (let i = objs.length - 1; i >= 0; i--) {
@@ -1591,13 +1697,66 @@ canvas.addEventListener('mousedown', e => {
 });
 
 canvas.addEventListener('mousemove', e => {
-  if (tool === 'select' && dragObj) {
+  if (tool !== 'select') {
+    // draw-mode preview (handled below)
+  } else if (resizeHandle && selectedObj) {
+    // ── RESIZE ──
+    const { x, y } = getPos(e);
+    const b = resizeStartBounds;
+    const dx = x - startX, dy = y - startY;
+    const h = resizeHandle;
+
+    let nx = b.ox, ny = b.oy, nw = b.ow, nh = b.oh;
+
+    if (h.includes('e')) nw = Math.max(10, b.ow + dx);
+    if (h.includes('s')) nh = Math.max(10, b.oh + dy);
+    if (h.includes('w')) { nx = b.ox + dx; nw = Math.max(10, b.ow - dx); }
+    if (h.includes('n')) { ny = b.oy + dy; nh = Math.max(10, b.oh - dy); }
+
+    if (selectedObj.type === 'text') {
+      // For text: scale font size proportionally based on height
+      selectedObj.x = nx;
+      selectedObj.y = ny;
+      selectedObj.size = Math.max(8, Math.round(b.fontSize * (nh / b.oh)));
+      selectedObj.h = selectedObj.size;
+    } else {
+      selectedObj.x = nx;
+      selectedObj.y = ny;
+      selectedObj.w = nw;
+      selectedObj.h = nh;
+    }
+    hasDragged = true;
+    renderAll();
+    return;
+  } else if (tool === 'select' && dragObj) {
+    // ── DRAG ──
     const { x, y } = getPos(e);
     hasDragged = true;
     dragObj.x = x - dragOffX;
     dragObj.y = y - dragOffY;
     renderAll();
-  } else if (drawing) {
+    return;
+  }
+
+  // cursor feedback
+  if (tool === 'select') {
+    const { x, y } = getPos(e);
+    if (selectedObj) {
+      const h = hitTestHandle(x, y, selectedObj);
+      if (h) { canvas.style.cursor = HANDLE_CURSORS[h]; return; }
+    }
+    // check if hovering an object
+    const objs = slides[currentSlide]?.objects || [];
+    let hit = false;
+    for (let i = objs.length - 1; i >= 0; i--) {
+      if (hitTest(x, y, objs[i])) { hit = true; break; }
+    }
+    canvas.style.cursor = hit ? 'move' : 'default';
+    return;
+  }
+
+  // draw preview
+  if (drawing) {
     const { x, y } = getPos(e);
     renderSlide(ctx, slides[currentSlide], W);
     ctx.save();
@@ -1610,9 +1769,12 @@ canvas.addEventListener('mousemove', e => {
       ctx.fillRect(startX, startY, x - startX, y - startY);
     } else if (tool === 'ellipse') {
       const w = x - startX, h = y - startY;
-      ctx.beginPath();
-      ctx.ellipse(startX + w/2, startY + h/2, Math.abs(w/2), Math.abs(h/2), 0, 0, Math.PI*2);
-      ctx.fill();
+      const rx = Math.abs(w / 2), ry = Math.abs(h / 2);
+      if (rx > 0 && ry > 0) {
+        ctx.beginPath();
+        ctx.ellipse(startX + w/2, startY + h/2, rx, ry, 0, 0, Math.PI*2);
+        ctx.fill();
+      }
     } else if (tool === 'line') {
       ctx.beginPath();
       ctx.moveTo(startX, startY);
@@ -1639,7 +1801,10 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('mouseup', e => {
   if (tool === 'select') {
     dragObj = null;
+    resizeHandle = null;
+    resizeStartBounds = null;
     hasDragged = false;
+    canvas.style.cursor = 'default';
     return;
   }
 
@@ -2156,6 +2321,8 @@ window.addEventListener('resize', scaleCanvas);
 //  INIT
 // ═══════════════════════════════════════════════════════
 (function init() {
+  const savedTheme = localStorage.getItem('sfp-theme') || 'dark';
+  applyTheme(savedTheme);
   scaleCanvas();
   setTool('select');
 })();
