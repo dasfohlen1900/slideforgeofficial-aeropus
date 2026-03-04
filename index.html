@@ -457,6 +457,27 @@
   .format-btn:hover { background: var(--border); }
   .format-btn.active { background: var(--accent); color: #000; }
 
+  .align-btns {
+    display: flex;
+    gap: 4px;
+  }
+  .align-btn {
+    flex: 1;
+    height: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .align-btn:hover { background: var(--border); }
+  .align-btn.active { background: var(--accent); color: #000; }
+
   /* ── STATUS BAR ── */
   #status {
     height: 28px;
@@ -1010,6 +1031,26 @@
         <button id="prop-underline" class="format-btn" onclick="toggleUnderline()" title="Unterstrichen">
           <u>U</u>
         </button>
+        <button id="prop-bullet" class="format-btn" onclick="toggleBullet()" title="Aufzählung">•</button>
+      </div>
+
+      <div class="prop-label" style="margin-top: 4px;">Ausrichtung</div>
+      <div class="align-btns">
+        <button class="align-btn" id="align-left"   onclick="setAlign('left')"   title="Links">
+          <svg width="14" height="12" fill="currentColor"><rect x="0" y="0" width="14" height="2"/><rect x="0" y="5" width="10" height="2"/><rect x="0" y="10" width="12" height="2"/></svg>
+        </button>
+        <button class="align-btn" id="align-center" onclick="setAlign('center')" title="Mitte">
+          <svg width="14" height="12" fill="currentColor"><rect x="0" y="0" width="14" height="2"/><rect x="2" y="5" width="10" height="2"/><rect x="1" y="10" width="12" height="2"/></svg>
+        </button>
+        <button class="align-btn" id="align-right"  onclick="setAlign('right')"  title="Rechts">
+          <svg width="14" height="12" fill="currentColor"><rect x="0" y="0" width="14" height="2"/><rect x="4" y="5" width="10" height="2"/><rect x="2" y="10" width="12" height="2"/></svg>
+        </button>
+      </div>
+
+      <div class="prop-label" style="margin-top: 4px;">Textbreite</div>
+      <div class="prop-row">
+        <input type="range" id="prop-textw" class="prop-range" min="80" max="940" value="400" oninput="updateSelectedTextW()">
+        <span id="prop-textw-val" class="prop-range-val">400px</span>
       </div>
     </div>
 
@@ -1071,7 +1112,7 @@
     <div class="modal-title">Text hinzufügen</div>
     <div class="modal-input-group">
       <label class="modal-label">Text</label>
-      <input type="text" id="text-input" class="modal-input" placeholder="Text eingeben...">
+      <textarea id="text-input" class="modal-input" placeholder="Text eingeben… (Zeilenumbruch mit Enter)" rows="3" style="resize:vertical; font-family:inherit; line-height:1.4"></textarea>
       
       <label class="modal-label">Schriftart</label>
       <select id="text-font" class="modal-select">
@@ -1385,19 +1426,74 @@ function renderSlide(context, slide, width) {
       let fontStyle = '';
       if (obj.italic) fontStyle += 'italic ';
       const fontWeight = obj.bold ? 'bold' : (obj.weight || '800');
-      context.font = `${fontStyle}${fontWeight} ${obj.size}px "${font}", sans-serif`;
-      
-      if (obj.underline) {
-        const metrics = context.measureText(obj.text);
-        context.strokeStyle = obj.fill;
-        context.lineWidth = Math.max(1, obj.size / 20);
-        context.beginPath();
-        context.moveTo(obj.x, obj.y + obj.size * 0.85);
-        context.lineTo(obj.x + metrics.width, obj.y + obj.size * 0.85);
-        context.stroke();
+      const fontSize = obj.size || 48;
+      context.font = `${fontStyle}${fontWeight} ${fontSize}px "${font}", sans-serif`;
+      context.fillStyle = obj.fill;
+      context.textAlign = obj.align || 'left';
+
+      const lineHeight = fontSize * 1.25;
+      const maxW = obj.w || 400;
+      const align = obj.align || 'left';
+      const bullet = obj.bullet || false;
+
+      // Anchor x for each alignment
+      const anchorX = align === 'center' ? obj.x + maxW / 2
+                    : align === 'right'  ? obj.x + maxW
+                    : obj.x;
+
+      // Word-wrap a single paragraph into lines
+      function wrapLine(text, width) {
+        const words = text.split(' ');
+        const lines = [];
+        let cur = '';
+        for (const word of words) {
+          const test = cur ? cur + ' ' + word : word;
+          if (context.measureText(test).width > width && cur) {
+            lines.push(cur);
+            cur = word;
+          } else {
+            cur = test;
+          }
+        }
+        if (cur) lines.push(cur);
+        return lines.length ? lines : [''];
       }
-      
-      context.fillText(obj.text, obj.x, obj.y + obj.size * 0.8);
+
+      // Build all rendered lines
+      const paragraphs = (obj.text || '').split('\n');
+      const allLines = [];
+      for (let pi = 0; pi < paragraphs.length; pi++) {
+        const prefix = bullet ? (pi === 0 ? '• ' : '  ') : '';
+        const wrapW = bullet ? maxW - context.measureText('• ').width : maxW;
+        const wrapped = wrapLine(paragraphs[pi], wrapW);
+        for (let li = 0; li < wrapped.length; li++) {
+          // Only first line of each paragraph gets bullet prefix
+          const pfx = bullet && li === 0 ? '• ' : (bullet ? '  ' : '');
+          allLines.push(pfx + wrapped[li]);
+        }
+      }
+
+      // Draw underline + text per line
+      for (let i = 0; i < allLines.length; i++) {
+        const lineText = allLines[i];
+        const lx = anchorX;
+        const ly = obj.y + fontSize * 0.8 + i * lineHeight;
+
+        if (obj.underline) {
+          const mw = context.measureText(lineText).width;
+          const ux = align === 'center' ? lx - mw/2 : align === 'right' ? lx - mw : lx;
+          context.strokeStyle = obj.fill;
+          context.lineWidth = Math.max(1, fontSize / 20);
+          context.beginPath();
+          context.moveTo(ux, ly + fontSize * 0.1);
+          context.lineTo(ux + mw, ly + fontSize * 0.1);
+          context.stroke();
+        }
+
+        context.fillText(lineText, lx, ly);
+      }
+
+      context.textAlign = 'left'; // reset
     }
     else if (obj.type === 'image' && obj._img) {
       context.drawImage(obj._img, obj.x, obj.y, obj.w, obj.h);
@@ -1495,12 +1591,23 @@ function updatePropsPanel() {
       propSizeVal.textContent = (selectedObj.size || 48) + 'px';
       propWeight.value = selectedObj.bold ? '700' : (selectedObj.weight || '800');
       
-      // Update format buttons
+      // Format buttons
       document.getElementById('prop-bold').classList.toggle('active', selectedObj.bold || false);
       document.getElementById('prop-italic').classList.toggle('active', selectedObj.italic || false);
       document.getElementById('prop-underline').classList.toggle('active', selectedObj.underline || false);
-      
-      // Update toolbar buttons
+      document.getElementById('prop-bullet').classList.toggle('active', selectedObj.bullet || false);
+
+      // Align buttons
+      ['left','center','right'].forEach(a => {
+        document.getElementById('align-' + a).classList.toggle('active', (selectedObj.align || 'left') === a);
+      });
+
+      // Text width
+      const tw = selectedObj.w || 400;
+      document.getElementById('prop-textw').value = tw;
+      document.getElementById('prop-textw-val').textContent = tw + 'px';
+
+      // Toolbar buttons
       document.getElementById('btn-bold').classList.toggle('active', selectedObj.bold || false);
       document.getElementById('btn-italic').classList.toggle('active', selectedObj.italic || false);
       document.getElementById('btn-underline').classList.toggle('active', selectedObj.underline || false);
@@ -1559,6 +1666,26 @@ function setColor(c) {
   event.target.classList.add('selected');
 }
 
+function toggleBullet() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.bullet = !selectedObj.bullet;
+  renderAll();
+}
+
+function setAlign(a) {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  selectedObj.align = a;
+  renderAll();
+}
+
+function updateSelectedTextW() {
+  if (!selectedObj || selectedObj.type !== 'text') return;
+  const val = parseInt(document.getElementById('prop-textw').value);
+  selectedObj.w = val;
+  document.getElementById('prop-textw-val').textContent = val + 'px';
+  renderAll();
+}
+
 // ═══════════════════════════════════════════════════════
 //  TEXT FORMATTING (B/I/U)
 // ═══════════════════════════════════════════════════════
@@ -1596,9 +1723,31 @@ function getObjBounds(obj) {
     const font = obj.font || 'Syne';
     let fontStyle = obj.italic ? 'italic ' : '';
     const fontWeight = obj.bold ? 'bold' : (obj.weight || '800');
-    ctx.font = `${fontStyle}${fontWeight} ${obj.size}px "${font}", sans-serif`;
-    const metrics = ctx.measureText(obj.text);
-    return { x: obj.x, y: obj.y, w: metrics.width, h: obj.size };
+    const fontSize = obj.size || 48;
+    ctx.font = `${fontStyle}${fontWeight} ${fontSize}px "${font}", sans-serif`;
+    const maxW = obj.w || 400;
+    const lineHeight = fontSize * 1.25;
+
+    function wrapLine(text, width) {
+      const words = text.split(' ');
+      const lines = [];
+      let cur = '';
+      for (const word of words) {
+        const test = cur ? cur + ' ' + word : word;
+        if (ctx.measureText(test).width > width && cur) { lines.push(cur); cur = word; }
+        else cur = test;
+      }
+      if (cur) lines.push(cur);
+      return lines.length ? lines : [''];
+    }
+
+    const paragraphs = (obj.text || '').split('\n');
+    let totalLines = 0;
+    for (const para of paragraphs) {
+      totalLines += wrapLine(para, maxW).length;
+    }
+    const h = totalLines * lineHeight;
+    return { x: obj.x, y: obj.y, w: maxW, h };
   }
   const ox = Math.min(obj.x, obj.x + (obj.w || 0));
   const oy = Math.min(obj.y, obj.y + (obj.h || 0));
@@ -1636,21 +1785,8 @@ function hitTestHandle(x, y, obj) {
 }
 
 function hitTest(x, y, obj) {
-  if (obj.type === 'text') {
-    const font = obj.font || 'Syne';
-    let fontStyle = obj.italic ? 'italic ' : '';
-    const fontWeight = obj.bold ? 'bold' : (obj.weight || '800');
-    ctx.font = `${fontStyle}${fontWeight} ${obj.size}px "${font}", sans-serif`;
-    const metrics = ctx.measureText(obj.text);
-    const w = metrics.width;
-    const h = obj.size;
-    return x >= obj.x && x <= obj.x + w && y >= obj.y && y <= obj.y + h;
-  }
-  const ox = Math.min(obj.x, obj.x + (obj.w || 0));
-  const oy = Math.min(obj.y, obj.y + (obj.h || 0));
-  const ow = Math.abs(obj.w || 0);
-  const oh = Math.abs(obj.h || 0);
-  return x >= ox && x <= ox + ow && y >= oy && y <= oy + oh;
+  const bx = getObjBounds(obj);
+  return x >= bx.x && x <= bx.x + bx.w && y >= bx.y && y <= bx.y + bx.h;
 }
 
 let hasDragged = false;
@@ -1714,11 +1850,9 @@ canvas.addEventListener('mousemove', e => {
     if (h.includes('n')) { ny = b.oy + dy; nh = Math.max(10, b.oh - dy); }
 
     if (selectedObj.type === 'text') {
-      // For text: scale font size proportionally based on height
       selectedObj.x = nx;
       selectedObj.y = ny;
-      selectedObj.size = Math.max(8, Math.round(b.fontSize * (nh / b.oh)));
-      selectedObj.h = selectedObj.size;
+      selectedObj.w = Math.max(80, nw);
     } else {
       selectedObj.x = nx;
       selectedObj.y = ny;
@@ -1953,7 +2087,7 @@ function confirmText() {
     text, 
     x: 80, 
     y: 80, 
-    w: 0, 
+    w: 400,
     h: size, 
     fill: activeColor, 
     size, 
@@ -1962,7 +2096,9 @@ function confirmText() {
     opacity: 1,
     bold: false,
     italic: false,
-    underline: false
+    underline: false,
+    align: 'left',
+    bullet: false
   };
   
   slides[currentSlide].objects.push(obj);
@@ -2300,7 +2436,7 @@ document.addEventListener('keydown', e => {
 //  TEXT MODAL KEYBOARD
 // ═══════════════════════════════════════════════════════
 document.getElementById('text-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') confirmText();
+  if ((e.key === 'Enter' && (e.shiftKey || e.ctrlKey))) confirmText();
   if (e.key === 'Escape') closeTextModal();
 });
 
